@@ -2,6 +2,7 @@
 #include "shorthand.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 void numToArray(u16 num, u8 *arr, u8 len) {
 	// little endian
@@ -93,6 +94,7 @@ u8 tryNum(u16 n) {
 	u8 numLen = 0;
 	for (u8 i = 0; i < 24; i++) {
 		u16 num = arrayToNum(permutations + (i * 4), 4);
+		if (num < 1000) continue;
 		if (isPrime(num)) {
 			nums[numLen] = num;
 			numLen++;
@@ -101,8 +103,8 @@ u8 tryNum(u16 n) {
 
 	// find all increasing sequences with brute force O(n^3) (may be slow but amount of work is reduced by prime detect
 	for (u8 x = 0; x < numLen - 2; x++) {
-		for (u8 y = 0; y < numLen - 1; y++) {
-			for (u8 z = 0; z < numLen; z++) {
+		for (u8 y = x + 1; y < numLen - 1; y++) {
+			for (u8 z = y + 1; z < numLen; z++) {
 				if (abs(nums[x] - nums[y]) == abs(nums[y] - nums[z]) && nums[x] != nums[z] && nums[x] > nums[y] && nums[y] > nums[z]) {
 					printf("%d : %d : %d \n", nums[x], nums[y], nums[z]);
 				}
@@ -126,12 +128,17 @@ int main() {
 		printf("%d = %d %d %d %d\n", arrayToNum(a, 4), a[0], a[1], a[2], a[3]);
 	}*/
 
+	clock_t start, end;
+	start = clock();
 	for (u16 i = 1001; i < 10000; i += 6) {
 		// 4! = 24
 		if (tryNum(i) || tryNum(i + 2)) {
 			break;
 		}
 	}
+	end = clock();
+	double time_taken = ((double)(end - start) / CLOCKS_PER_SEC) * 1000.0f;
+	printf("%.2f ms\n", time_taken);
 
 	printf("find the number somewhere :)");
 }
